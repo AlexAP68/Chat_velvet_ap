@@ -1,0 +1,384 @@
+body {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0;
+}
+
+section{
+  display: flex;
+}
+
+h1 {
+  text-align: center;
+}
+
+#cuerpo_mensaje{
+  background-image:url("../public/resources/Fondo_chat.webp");
+  height: 99vh;
+  width: 130vh;
+  color: white;
+}
+.perfil img {
+  width: 15%;
+  height: 15%;
+  border-radius: 50%;
+  margin-left:2%;
+  margin-top: 0.2%;
+}
+
+.perfil {
+  display: flex;
+  flex-direction: row;
+  background-color: rgba(255, 0, 0, 0.5); /* Corregido el valor alpha */
+}
+
+
+#messages {
+  height: 65%;
+  width: 95.5%;
+  border: 1px solid #ccc;
+  padding: 20px;
+  overflow-y: auto;
+  margin-top: 5px;
+  margin-bottom: 1%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+#messages li {
+  margin-bottom: 10px; /* Espacio entre mensajes */
+}
+
+.message-sent {
+  align-self: flex-end; /* Alinea los bocadillos enviados a la derecha */
+}
+
+#form {
+  bottom: 0;
+  left: 100px; /* Ajusta la posición izquierda según tus preferencias */
+  right: 100px; /* Ajusta la posición derecha según tus preferencias */
+  width: auto; /* Ajusta el ancho según tus preferencias o deja que se ajuste automáticamente */
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1); /* Sombra en la parte inferior */
+  background-color: white;
+}
+
+#input {
+  width: 85%;
+  height: 100%;
+  padding: 10px;
+}
+
+button,
+#fileInput {
+  margin-bottom: 10px;
+  margin-left: 10px; /* Ajusta el margen izquierdo según tus preferencias */
+  margin-right: 10px; /* Ajusta el margen derecho según tus preferencias */
+}
+
+#data{
+  color: cyan;
+}
+
+.contenido_tab{
+  display: flex;
+  height: 100vh;
+  width: 65vh;
+  flex-direction: column;
+  background-color: purple;
+  overflow-y: auto;
+}
+
+
+
+.tabs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tab-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  display: none; /* Mantén esta línea para ocultar las pestañas por defecto */
+}
+
+.tab-content.active {
+  display: flex;
+  flex-direction: column;
+}
+
+
+
+#informacion{
+  display: flex;
+  flex-direction: column;
+}
+
+
+.sesion{
+  display: flex;
+  flex-direction: column;
+}
+
+#tiempo{
+  display: flex;
+  flex-direction: column;
+}
+
+
+
+.chat-item.selected {
+  background-color: #f0f0f0; /* o cualquier otro estilo que quieras aplicar */
+}
+
+.chatList {
+  flex-grow: 1; /* Hacer que ocupe todo el espacio disponible */
+  overflow-y: auto; /* Habilitar desplazamiento si el contenido excede el área visible */
+  margin: 0;
+  padding: 0;
+  list-style: none; /* Quitar estilos de lista predeterminados */
+}
+
+.chat-item {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+  width: 100%;
+  height: 10vh;
+  /* Resto de tu CSS para .chat-item */
+}
+
+#lista{
+  width: 75%;
+}
+
+.chat-info {
+  margin-left: 15px;
+}
+
+.chat-user {
+  font-size: 1.2em;
+  margin: 0;
+}
+
+.chat-status {
+  font-size: 0.9em;
+  margin: 0;
+}
+
+.online {
+  color: green;
+}
+
+.offline {
+  color: red;
+}
+
+.user-photo {
+  width: 40px; /* o el tamaño que prefieras */
+  height: 40px; /* o el tamaño que prefieras */
+  border-radius: 50%; /* para hacerla circular */
+  margin-right: 10px; /* espacio entre la imagen y el texto */
+}
+
+
+.link-wrapper {
+  position: relative;
+  display: inline-block;
+  margin: 0px 16px;
+}
+.link-wrapper .fallback {
+  font-size: 2.25em;
+  letter-spacing: 4px;
+  line-height: 0;
+  opacity: 0;
+  position: relative;
+  top: 15px;
+  left: 0;
+}
+.link-wrapper .shape-wrapper {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+.link-wrapper:hover {
+  z-index: 9999;
+}
+.link-wrapper:hover .shape-wrapper {
+  transform: rotate(-6deg);
+  display: block;
+}
+.link-wrapper:hover .shape-wrapper .shape.cyan-fill {
+  transform: scale(3, 0.1);
+}
+.link-wrapper:hover .img-wrapper img {
+  animation: tiltBounce 0.15s ease;
+  animation-fill-mode: forwards;
+  display: block;
+}
+.link-wrapper:hover .img-wrapper img.normal {
+  mix-blend-mode: darken;
+}
+.link-wrapper:nth-child(even):hover .shape-wrapper {
+  transform: rotate(11deg);
+}
+.link-wrapper:nth-child(even):hover .img-wrapper img {
+  animation: tiltBounceAlt 0.15s ease;
+  animation-fill-mode: forwards;
+}
+
+.img-wrapper img {
+  width: auto;
+  height: 40px;
+  display: block;
+  left: 0;
+  right: 0;
+  top: -5px;
+  margin: 0 auto;
+  position: absolute;
+  z-index: 999;
+}
+.img-wrapper img.normal {
+  display: block;
+}
+.img-wrapper img.active {
+  display: none;
+  z-index: -1;
+}
+
+.shape-wrapper {
+  filter: sepia(50%) saturate(3);
+}
+.shape-wrapper .shape {
+  transition: all 0.1s linear;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 35px;
+  overflow: hidden;
+}
+.shape-wrapper .shape svg {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.shape-wrapper .shape.cyan-fill {
+  mix-blend-mode: screen;
+  animation-delay: 0.05s;
+  animation-duration: 0.4s;
+}
+.shape-wrapper .shape.red-fill {
+  animation-duration: 0.45s;
+  animation-delay: 0.08s;
+  opacity: 0.8;
+}
+
+.jelly {
+  -webkit-animation-name: jelly;
+  animation-name: jelly;
+  -webkit-transform-origin: center;
+  transform-origin: center;
+  -webkit-animation-iteration-count: infinite;
+  animation-iteration-count: infinite;
+  -webkit-animation-timing-function: linear;
+  animation-timing-function: linear;
+}
+
+@keyframes tiltBounce {
+  0% {
+    transform: scale(1) rotate(-7deg);
+  }
+  50% {
+    transform: scale(1.5) rotate(-7deg);
+  }
+  100% {
+    transform: scale(1.15) rotate(-7deg);
+  }
+}
+@keyframes tiltBounceAlt {
+  0% {
+    transform: scale(1) rotate(7deg);
+  }
+  50% {
+    transform: scale(1.5) rotate(7deg);
+  }
+  100% {
+    transform: scale(1.15) rotate(7deg);
+  }
+}
+@keyframes jelly {
+  0% {
+    width: 100%;
+    transform: scale(1.25, 1) skewX(20deg) translateY(3px) rotateX(40deg) rotateY(10deg) rotateZ(-10deg);
+  }
+  50% {
+    width: 100%;
+    transform: scale(1.25, 1.1) skewX(-15deg) translateY(-2px) translateZ(-30px);
+  }
+  100% {
+    width: 100%;
+    transform: scale(1.25, 1) skewX(20deg) translateY(3px) rotateX(-40deg) rotateY(-10deg) rotateZ(-15deg);
+  }
+}
+
+
+img.normal {
+  width: 70px; /* Ajusta el ancho según tus necesidades */
+  height: 70px; /* Ajusta el alto según tus necesidades */
+}
+
+img.active {
+  width: 70px; /* Ajusta el ancho según tus necesidades */
+  height: 70px; /* Ajusta el alto según tus necesidades */
+}
+
+.Chat {
+  margin: 3%;
+}
+
+.custom-file-input svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  cursor: pointer;
+  background-color: white;
+}
+
+
+.message-bubble {
+  max-width: 60%;
+  padding: 10px;
+  margin: 10px;
+  border-radius: 20px;
+  color: #fff;
+}
+
+.message-bubble .message-user {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.message-sent {
+  background-color: #007bff;
+  align-self: flex-end;
+  order: 1; /* Esto asegura que si hay mensajes a la misma hora, el enviado se muestre primero */
+}
+
+.message-received {
+  background-color: #333;
+  align-self: flex-start;
+  order: 2;
+}
+
+
+
+
+
