@@ -66,7 +66,7 @@ h1 {
 }
 
 #input {
-  width: 85%;
+  width: 97%;
   height: 100%;
   padding: 10px;
 }
@@ -369,14 +369,15 @@ img.active {
 .message-sent {
   background-color: #007bff;
   align-self: flex-end;
-  order: 1; /* Esto asegura que si hay mensajes a la misma hora, el enviado se muestre primero */
+
 }
 
 .message-received {
   background-color: #333;
   align-self: flex-start;
-  order: 2;
+
 }
+
 
 
 

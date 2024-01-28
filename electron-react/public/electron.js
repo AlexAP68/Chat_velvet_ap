@@ -6,12 +6,15 @@ const os = require('os');
 const path = require('path');
 let mainWindow;
 const isDev = require('electron-is-dev');
-const { initializeApp } = require('firebase/app');
-const { getDatabase, ref, set } = require('firebase/database');
+const {initializeApp} = require('firebase/app');
+const {getDatabase, ref, set} = require('firebase/database');
 const express = require('express');
 const expressApp = express();
+const fs = require('fs');
 
+const messagesFilePath = path.join(app.getPath('userData'), 'messages.json');
 
+//configura el firebase
 const firebaseConfig = {
     apiKey: "AIzaSyAX8KL8YK6GlX8s3lrF-0bD-9XPb83jjhc",
     authDomain: "spdvi-chat.firebaseapp.com",
@@ -25,11 +28,17 @@ const firebaseConfig = {
 const bd = initializeApp(firebaseConfig);
 const db = getDatabase(bd);
 
+
+//crea la ventana
 function createWindow() {
-    mainWindow = new BrowserWindow({ width: 900, height: 680,
-    webPreferences:{
-        preload: path.join(__dirname, 'preload.js')
-    }});
+    mainWindow = new BrowserWindow({
+        width: 1900, height: 1080,
+        webPreferences: {
+            preload: path.join(__dirname, 'preload.js')
+        }
+    });
+
+    mainWindow.setMenu(null);
     mainWindow.loadURL(isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`);
 
 
@@ -46,7 +55,6 @@ function createWindow() {
     mainWindow.on('closed', () => mainWindow = null);
 
 
-
 }
 
 app.on('ready', () => {
@@ -56,8 +64,6 @@ app.on('ready', () => {
     expressApp.listen(PORT, () => {
         console.log(`Servidor Express corriendo en http://localhost:${PORT}`);
     });
-
-
 
 
 });
@@ -78,6 +84,8 @@ app.on('activate', () => {
 });
 
 
+
+//consigue la dirrecion ip del usuario
 function getIPAddress() {
     const interfaces = os.networkInterfaces();
     let ipAddress = '';
@@ -96,14 +104,14 @@ function getIPAddress() {
 }
 
 ipcMain.on('enviar_datos', (event, data) => {
-    const { userName, ipAddress, lastConnection, statusOnline } = data;
+    const {userName, ipAddress, lastConnection, statusOnline} = data;
 
     console.log(userName);
     console.log(ipAddress);
     console.log(lastConnection);
     console.log(statusOnline);
 
-   set(ref(db, 'chatUsers/' + userName), {
+    set(ref(db, 'chatUsers/' + userName), {
         ip: ipAddress,
         lastConnectionTime: lastConnection,
         status: statusOnline
@@ -122,13 +130,9 @@ ipcMain.on('send-message', (event, data) => {
     // Extraer información del mensaje
     const { userName, message, ip } = data;
 
-    console.log("hola");
-    console.log(userName);
-    console.log(message);
-
     // Crear un objeto con la información necesaria para enviar
     const mensajeParaEnviar = {
-        userName: userName, // El nombre del usuario que envía el mensaje
+        userName: userName, // Usa el nombre de usuario real que envía el mensaje
         message: message, // El mensaje a enviar
     };
 
@@ -140,39 +144,44 @@ ipcMain.on('send-message', (event, data) => {
         .catch((error) => {
             console.error("Error al enviar mensaje a:", ip, error);
         });
+
+    // Guardar el mensaje en el archivo
+    const currentMessages = loadMessages();
+    currentMessages.push(mensajeParaEnviar);
+    saveMessages(currentMessages);
 });
+
 
 
 expressApp.use(express.json());
 
+//recibe los mensajes de otros usuarios
 expressApp.post('/chat', (req, res) => {
     const mensajeRecibido = req.body;
     console.log('Mensaje recibido en Express:', mensajeRecibido);
 
-    const {userName, message } = mensajeRecibido;
-
-    // Suponiendo que mensajeRecibido es un objeto con al menos las propiedades 'sender' y 'text'
-    const mensajeParaEnviar = {
-        userName: userName,
-        message: message
-    };
+    if (!(req.body && req.body.userName && req.body.message && req.body.message.length > 0)) {
+        res.status(400).send('Mensaje vacio. SPAM');
+        return;
+    }
 
     // Envía el mensaje al proceso de renderizado
     if (mainWindow && !mainWindow.isDestroyed()) {
         console.log('Enviando mensaje al proceso de renderizado...');
-        mainWindow.webContents.send('receive-message-server', mensajeParaEnviar);
+        mainWindow.webContents.send('receive-message-server', mensajeRecibido);
     } else {
         console.log('La ventana no está disponible para enviar el mensaje.');
     }
 
     res.status(200).send('Mensaje recibido y procesado');
-});
+})
 
+//envia el mensaje a otros usuarios
 const enviarMensaje = async (destinatarioIP, mensaje) => {
     try {
         const response = await fetch(`http://${destinatarioIP}:4000/chat`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(mensaje),
         });
         const respuesta = await response.text();
@@ -181,4 +190,41 @@ const enviarMensaje = async (destinatarioIP, mensaje) => {
         console.error('Error al enviar el mensaje:', error);
     }
 };
+
+//carga los mensajes
+function loadMessages() {
+    if (fs.existsSync(messagesFilePath)) {
+        try {
+            const data = fs.readFileSync(messagesFilePath);
+            return JSON.parse(data);
+        } catch (error) {
+            console.error('Error al cargar los mensajes:', error);
+            return [];
+        }
+    } else {
+        // Si no existe el archivo, retorna un array vacío
+        return [];
+    }
+}
+
+//guarda mensajes
+function saveMessages(messages) {
+    try {
+        fs.writeFileSync(messagesFilePath, JSON.stringify(messages, null, 2));
+        console.log('Mensajes guardados correctamente.');
+    } catch (error) {
+        console.error('Error al guardar los mensajes:', error);
+    }
+}
+
+// IPC para cargar mensajes
+ipcMain.handle('load-messages', async (event) => {
+    return loadMessages();
+});
+
+// IPC para guardar mensajes
+ipcMain.on('save-messages', (event, messages) => {
+    saveMessages(messages);
+});
+
 
