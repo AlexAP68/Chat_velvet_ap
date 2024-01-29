@@ -132,8 +132,8 @@ ipcMain.on('send-message', (event, data) => {
 
     // Crear un objeto con la información necesaria para enviar
     const mensajeParaEnviar = {
-        userName: userName, // Usa el nombre de usuario real que envía el mensaje
-        message: message, // El mensaje a enviar
+        userName: "alexalameda",
+        message: message,
     };
 
     // Enviar el mensaje al destinatario usando su IP

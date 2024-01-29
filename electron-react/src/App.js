@@ -254,7 +254,7 @@ const App = () => {
 
         // Envía el mensaje al proceso principal
         const data = {
-            userName: selectedUserName,
+            userName: "alexalameda",
             message: messageToSend,
             ip: usersData[selectedUserName].ip,
         };
